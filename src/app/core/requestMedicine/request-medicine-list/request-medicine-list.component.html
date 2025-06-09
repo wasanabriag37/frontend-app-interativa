@@ -1,0 +1,323 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h5>Solicitudes de medicamentos</h5>
+            <p-table #dt1 [value]="requestsMedicines" dataKey="requestMedicineId" [lazy]="true" [loading]="loading"
+                [expandedRowKeys]="expandedRows" [rows]="paginable.numberOfElements" [paginator]="false"
+                [globalFilterFields]="['requestMedicineId', 'user.userId', 'user.names', 'user.lastNames', 'user.email', 'user.numberDocument', 'user.phone']">
+                <ng-template #caption>
+                    <div class="flex justify-between">
+                        <p-iconfield iconPosition="left" class="">
+                            <p-inputicon>
+                                <i class="pi pi-search"></i>
+                            </p-inputicon>
+                            <input pInputText  placeholder="Buscar por N° de solicitud"
+                                pTooltip="Buscar por N° solicitud, N° Orden, nombre medicamento" (input)="search($event)"/>
+                        </p-iconfield>
+                        <div class="flex items-center gap-2">
+                            <p-button label="Limpiar Filtros" [outlined]="true" icon="pi pi-filter-slash"
+                                pTooltip="Limpiar Filtros" tooltipPosition="left" (click)="clear(dt1)"/>
+                        </div>
+                    </div>
+                </ng-template>
+                <ng-template #header>
+                    <tr>
+                        <th>
+                            <div class="flex items-center">
+                                N° Solicitud
+                                 <p-columnFilter pTooltip="Haga clic para filtrar por numero de solicitud" #columnFilterClear
+                                    type="text" field="requestMedicineId" display="menu" [showOperator]="false"
+                                    [showAddButton]="false" [showApplyButton]="false" matchMode="contains"
+                                    [showMatchModes]="false" [showClearButton]="false" (onShow)="filterOpen = true"
+                                    (onHide)="filterOpen = false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <input type="text" pInputText [(ngModel)]="filterRequestMedicine.requestMedicineId"
+                                            (ngModelChange)="onSelectionChange()">
+                                    </ng-template>
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]="filterRequestMedicine.requestMedicineId ? 'pi  pi-filter-fill' : 'pi pi-filter'"
+                                            [ngStyle]="{'color': filterRequestMedicine.requestMedicineId ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small"
+                                            (click)="filterRequestMedicine.requestMedicineId = null; hidenOverlay(columnFilterClear)" />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Paciente
+                                <p-columnFilter #columnFilterClear pTooltip="Haga clic para filtrar por solicitantes"
+                                    #columnFilterOncall field="applicant.fullName" matchMode="in" display="menu" (onShow)="filterOpen = true" 
+                                    (onHide)="filterOpen = false"
+                                    [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                                    [showApplyButton]="false" [showClearButton]="false">
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]="filterRequestMedicine.usersIds?.length ? 'pi pi-filter-fill' : 'pi pi-filter'" [ngStyle]="{'color': filterRequestMedicine.usersIds?.length ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="header">
+                                        <div class="px-3 pt-3 pb-0">
+                                            <span class="font-bold">Pacientes</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-multiSelect [options]="users" placeholder="Buscar por pacientes"
+                                            [(ngModel)]="filterRequestMedicine.usersIds" [optionValue]="'userId'"
+                                            (onChange)="onSelectionChange()" [optionLabel]="'lastNames'"
+                                            (onClear)="listRequestMedicine()"
+                                            [showClear]="true" [filter]="true" [maxSelectedLabels]="2"
+                                            [emptyMessage]="'No hay datos'"
+                                            [emptyFilterMessage]="'No se encontraron resultados'"
+                                            [style]="{'min-width':'250px'}">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{ capitalizerWord(option.names+" "+option.lastNames) }}</span>
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small" (click)="filterRequestMedicine.usersIds = []; hidenOverlay(columnFilterClear)"  />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Medicamento
+                               <p-columnFilter #columnFilterClear pTooltip="Haga clic para filtrar por medicamentos"
+                                    #columnFilterOncall field="applicant.fullName" matchMode="in" display="menu" (onShow)="filterOpen = true" 
+                                    (onHide)="filterOpen = false"
+                                    [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                                    [showApplyButton]="false" [showClearButton]="false">
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]="filterRequestMedicine.medicineIds?.length ? 'pi pi-filter-fill' : 'pi pi-filter'" [ngStyle]="{'color': filterRequestMedicine.medicineIds?.length ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="header">
+                                        <div class="px-3 pt-3 pb-0">
+                                            <span class="font-bold">Medicamentos</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-multiSelect [options]="typeMedicines" placeholder="Buscar por Medicamentos"
+                                            [(ngModel)]="filterRequestMedicine.medicineIds" [optionValue]="'medicineId'"
+                                            (onChange)="onSelectionChange()" [optionLabel]="'nameMedicine'"
+                                            (onClear)="listRequestMedicine()"
+                                            [showClear]="true" [filter]="true" [maxSelectedLabels]="2"
+                                            [emptyMessage]="'No hay datos'"
+                                            [emptyFilterMessage]="'No se encontraron resultados'"
+                                            [style]="{'min-width':'250px'}">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{ capitalizerWord(option.nameMedicine) }}</span>
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small" (click)="filterRequestMedicine.medicineIds = []; hidenOverlay(columnFilterClear)"  />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Cobertura POS
+                                <p-columnFilter #columnFilterClear pTooltip="Haga clic para filtrar por tipos cobertura"
+                                    field="coveragePos" matchMode="in" display="menu" [showMatchModes]="false"
+                                    [showOperator]="false" [showAddButton]="false" [showApplyButton]="false"
+                                    (onShow)="filterOpen = true" (onHide)="filterOpen = false"
+                                    [showClearButton]="false">
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]=" filterRequestMedicine.coveragePos != true && filterRequestMedicine.coveragePos != false && filterRequestMedicine.coveragePos ? 'pi  pi-filter-fill' : 'pi pi-filter'"
+                                            [ngStyle]="{'color': filterRequestMedicine.coveragePos != true && filterRequestMedicine.coveragePos != false && filterRequestMedicine.coveragePos ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="header">
+                                        <div class="px-3 pt-3 pb-0">
+                                            <span class="font-bold">Tipos de cobertura</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-multiSelect [options]="typeCoverage" placeholder="Buscar tipo de proceso"
+                                            [(ngModel)]="filterRequestMedicine.coveragePos" [optionValue]="'value'"
+                                            (onChange)="onSelectionChange()" [optionLabel]="'name'" [showClear]="true"
+                                            [filter]="true" [maxSelectedLabels]="1" [selectionLimit]="1"
+                                            (onClear)="listRequestMedicine()" [emptyMessage]="'No hay datos'"
+                                            [emptyFilterMessage]="'No se encontraron resultados'"
+                                            [style]="{'min-width':'250px'}">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{ option.name }}</span>
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small"
+                                            (click)="filterRequestMedicine.coveragePos = null; hidenOverlay(columnFilterClear)" />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Cantidad
+                                <!-- <p-columnFilter #columnFilterClear pTooltip="Haga clic para filtrar por solicitantes"
+                                    #columnFilterOncall field="applicant.fullName" matchMode="in" display="menu" (onShow)="filterOpen = true" 
+                                    (onHide)="filterOpen = false"
+                                    [showMatchModes]="false" [showOperator]="false" [showAddButton]="false"
+                                    [showApplyButton]="false" [showClearButton]="false">
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]="requisitionFilter.userApplicantIds?.length ? 'pi pi-filter-fill' : 'pi pi-filter'" [ngStyle]="{'color': requisitionFilter.userApplicantIds?.length ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="header">
+                                        <div class="px-3 pt-3 pb-0">
+                                            <span class="font-bold">Solicitantes</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-multiSelect [options]="users" placeholder="Buscar Solicitante"
+                                            [(ngModel)]="requisitionFilter.userApplicantIds" [optionValue]="'userId'"
+                                            (onChange)="onSelectionChange()" [optionLabel]="'fullName'"
+                                            (onClear)="listRequisitions()"
+                                            [showClear]="true" [filter]="true" [maxSelectedLabels]="2"
+                                            [emptyMessage]="'No hay datos'"
+                                            [emptyFilterMessage]="'No se encontraron resultados'"
+                                            [style]="{'min-width':'250px'}">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{ option.fullName }}</span>
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small" (click)="requisitionFilter.userApplicantIds = []; hidenOverlay(columnFilterClear)"  />
+                                    </ng-template>
+                                </p-columnFilter> -->
+                            </div>
+                        </th>
+
+                    </tr>
+                </ng-template>
+                <ng-template #body let-requisition let-expanded="expanded">
+                    <tr class="selectable-row" [pSelectableRow]="requisition" tooltipPosition="bottom">
+                        <td>
+                            <p-button type="button" pRipple [pRowToggler]="requisition" [text]="true" [rounded]="true"
+                                [plain]="true" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"
+                                pTooltip="Previsualizar Detalles" /> {{
+                            requisition.requestMedicineId.toString().padStart(4, '0') }}
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ capitalizerWord(requisition.user.names+" "+requisition.user.lastNames )
+                                    }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ capitalizerWord(requisition.medicine.nameMedicine) }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <div class="text-center">
+                                    <i class="pi pi-check-circle text-green-500"
+                                        *ngIf="requisition.medicine.coveragePos"></i>
+                                    <i class="pi pi-times-circle text-red-500"
+                                        *ngIf="!requisition.medicine.coveragePos"></i>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex items-center gap-2">
+                                <span>{{ requisition.amount}}</span>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #expandedrow let-requisitionDetail>
+                    <tr>
+                        <td [attr.colspan]="5">
+                            <p-card>
+                                <ng-template #title>
+                                    <div
+                                        style="display: flex; justify-content: center; align-items: center; position: relative; width: 100%;">
+
+                                        <div style="font-weight: bold; font-size: 15px; text-align: center;">
+                                            Detalles
+                                        </div>
+                                    </div>
+                                </ng-template>
+                                <div class="grid grid-cols-3 gap-x-6 gap-y-4">
+                                    <div>
+                                        <label class="block mb-2 font-bold">N° solicitud</label><label>{{
+                                            requisitionDetail.requestMedicineId.toString().padStart(4, '0') }}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Nombres del Paciente:</label>
+                                        <label>{{capitalizerWord(requisitionDetail.user.names ) }}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Apellidos del Paciente:</label>
+                                        <label>{{capitalizerWord(requisitionDetail.user.lastNames ) }}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">codigo Medicamento:</label>
+                                        <label>{{requisitionDetail.medicine.code}}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Medicamento:</label>
+                                        <label>{{capitalizerWord(requisitionDetail.medicine.nameMedicine ) }}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Cobertura POS:</label>
+                                        <i class="pi pi-check-circle text-green-500"
+                                            *ngIf="requisitionDetail.medicine.coveragePos"></i>
+                                        <i class="pi pi-times-circle text-red-500"
+                                            *ngIf="!requisitionDetail.medicine.coveragePos"></i>
+                                    </div>
+                                </div>
+                                  <p-divider  *ngIf="requisitionDetail.dataAddRequestMedicine != null"/>
+                                <div *ngIf="requisitionDetail.dataAddRequestMedicine != null"
+                                    class="grid grid-cols-3 gap-x-6 gap-y-4 mt-3">
+                                    <div>
+                                        <label class="block mb-2 font-bold">N° Orden</label><label>{{
+                                            requisitionDetail.dataAddRequestMedicine.numberOrder
+                                            }}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Direccion:</label>
+                                        <label>{{capitalizerWord(requisitionDetail.dataAddRequestMedicine.address )
+                                            }}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Telefono:</label>
+                                        <label>{{requisitionDetail.dataAddRequestMedicine.phone}}</label>
+                                    </div>
+                                    <div>
+                                        <label class="block mb-2 font-bold">Correo:</label>
+                                        <label>{{requisitionDetail.dataAddRequestMedicine.email
+                                            }}</label>
+                                    </div>
+                                </div>
+                            </p-card>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td [attr.colspan]="5" class="text-center">Solicitudes no encontradas
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+            <p-paginator (onPageChange)="onPageChange($event)" [first]="paginable.elementFirst" [rows]="15"
+                [totalRecords]="paginable.totalElements" [showCurrentPageReport]="true" [showPageLinks]="true"
+                [showJumpToPageDropdown]="false"
+                currentPageReportTemplate="Mostrado {{paginable.elementFirst+1}} al {last} de {{paginable.totalElements}}"
+                [rowsPerPageOptions]="[10, 15, 20, 30, 40, 50]" />
+        </div>
+    </div>
+</div>

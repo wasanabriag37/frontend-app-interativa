@@ -1,0 +1,71 @@
+<app-floating-configurator />
+<div class="flex items-center justify-center mt-12 ">
+        <p-card [style]="{ width: '100%',  }" class="w-full mx-10">
+
+        <ng-template #title> 
+            <div class="text-center">
+                <span class="text-2xl font-bold">📝 Registro</span>
+            </div>
+        </ng-template>
+        <p class="m-02">
+            Complete la información
+        </p>
+        <form [formGroup]="formRegister" (ngSubmit)="registerUser()">
+            <div class="grid">
+                <div class="col-4 mb-2">
+                    <label for="firstname2" class="block mb-2 font-bold">Nombres</label>
+                    <input pInputText id="firstname2" type="text" class="w-full" formControlName="names" [ngClass]="{'ng-invalid ng-dirty': formRegister.get('names')?.hasError('required') && formRegister.get('names')?.touched}">
+                    <small class="p-error"
+                        *ngIf="formRegister.get('names')?.hasError('required') && formRegister.get('names')?.touched"
+                        style="color: red;">
+                        El Nombre es obligatorio.
+                    </small>
+                </div>
+                <div class="col-6 mb-2">
+                    <label for="lastname2" class="block mb-2 font-bold">Apellidos</label>
+                    <input pInputText id="lastname2" type="text" formControlName="lastNames" class="w-full" [ngClass]="{'ng-invalid ng-dirty': formRegister.get('lastNames')?.hasError('required') && formRegister.get('lastNames')?.touched}">
+                    <small class="p-error"
+                        *ngIf="formRegister.get('lastNames')?.hasError('required') && formRegister.get('lastNames')?.touched"
+                        style="color: red;">
+                        El Apellido es obligatorio.
+                    </small>
+                </div>
+                <div class="col-4 mb-2">
+                    <label for="number1" class="block mb-2 font-bold">Numero de documento</label>
+                    <input pInputText formControlName="numberDocument" type="text" class="w-full" [ngClass]="{'ng-invalid ng-dirty': formRegister.get('numberDocument')?.hasError('required') && formRegister.get('numberDocument')?.touched}">
+                    <small class="p-error"
+                        *ngIf="formRegister.get('numberDocument')?.hasError('required') && formRegister.get('numberDocument')?.touched"
+                        style="color: red;">
+                        El numero de documento es obligatorio.
+                    </small>
+                </div>
+                <div class="col-6 mb-2">
+                    <label for="email" class="block mb-2 font-bold">Correo electronico</label>
+                    <input pInputText id="email" type="text" formControlName="email" class="w-full" [ngClass]="{'ng-invalid ng-dirty': formRegister.get('email')?.hasError('required') && formRegister.get('email')?.touched}">
+                    <small class="p-error"
+                        *ngIf="formRegister.get('email')?.hasError('required') && formRegister.get('email')?.touched"
+                        style="color: red;">
+                        El Correo es obligatorio.
+                    </small>
+                </div>
+                <div class="col-4 mb-2">
+                    <label for="phone" class="block mb-2 font-bold">Telefono</label>
+                    <input pInputText id="phone" type="text" class="w-full" formControlName="phone">
+                </div>
+                <div class="col-6 mb-2">
+                    <label for="lastname2" class="block mb-2 font-bold">Password</label>
+                    <p-password id="password1" formControlName="password" placeholder="Password" [toggleMask]="true" [ngClass]="{'ng-invalid ng-dirty': formRegister.get('password')?.hasError('required') && formRegister.get('password')?.touched}"
+                        styleClass="mb-1" [fluid]="true" [feedback]="true"></p-password>
+                    <small class="p-error"
+                        *ngIf="formRegister.get('password')?.hasError('required') && formRegister.get('password')?.touched"
+                        style="color: red;">
+                        La Contraseña es obligatorio.
+                    </small>
+                </div>
+                <div class="col-6 text-center mb-2">
+                    <p-button label="Registrase" styleClass="" type="submit"></p-button>
+                </div>
+            </div>
+        </form>
+    </p-card>
+</div>

@@ -1,0 +1,147 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card">
+            <h5>Solicitudes Medicamentos</h5>
+            <p-table #dt1 [value]="medicines" dataKey="id" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+                [paginator]="false" [globalFilterFields]="['medicineId', 'code', 'nameMedicine', 'coveragePos']">
+                <ng-template #caption>
+                    <div class="flex justify-between">
+                        <p-iconfield iconPosition="left" class="ml-auto">
+                            <p-inputicon>
+                                <i class="pi pi-search"></i>
+                            </p-inputicon>
+                            <input pInputText type="text" placeholder="buscar medicamento"  (input)="search($event)"/>
+                        </p-iconfield>
+                        <!-- <p-button label="Clear" [outlined]="true" icon="pi pi-filter-slash" /> -->
+                    </div>
+                </ng-template>
+                <ng-template #header>
+                    <tr>
+                        <th style="min-width:1rem">
+                            <div class="flex items-center">
+                                #
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Codigo
+                                <p-columnFilter pTooltip="Haga clic para filtrar por codigo" #columnFilterClear
+                                    type="text" field="code" display="menu" [showOperator]="false"
+                                    [showAddButton]="false" [showApplyButton]="false" matchMode="contains"
+                                    [showMatchModes]="false" [showClearButton]="false" (onShow)="filterOpen = true"
+                                    (onHide)="filterOpen = false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <input type="text" pInputText [(ngModel)]="filterMedicines.code"
+                                            (ngModelChange)="onSelectionChange()">
+                                    </ng-template>
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]="filterMedicines.code ? 'pi  pi-filter-fill' : 'pi pi-filter'"
+                                            [ngStyle]="{'color': filterMedicines.code ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small"
+                                            (click)="filterMedicines.code = null; hidenOverlay(columnFilterClear)" />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Nombre del medicamento
+                                <p-columnFilter pTooltip="Haga clic para filtrar por nombre del medicamento"
+                                    #columnFilterClear type="text" field="nameMedicine" display="menu"
+                                    [showOperator]="false" [showAddButton]="false" [showApplyButton]="false"
+                                    matchMode="contains" [showMatchModes]="false" [showClearButton]="false"
+                                    (onShow)="filterOpen = true" (onHide)="filterOpen = false">
+                                    <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                                        <input type="text" pInputText [(ngModel)]="filterMedicines.name"
+                                            (ngModelChange)="onSelectionChange()">
+                                    </ng-template>
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]="filterMedicines.name ? 'pi  pi-filter-fill' : 'pi pi-filter'"
+                                            [ngStyle]="{'color': filterMedicines.name ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small"
+                                            (click)="filterMedicines.name = null; hidenOverlay(columnFilterClear)" />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Cobertura POS
+                                <p-columnFilter #columnFilterClear pTooltip="Haga clic para filtrar por tipos cobertura"
+                                    field="coveragePos" matchMode="in" display="menu" [showMatchModes]="false"
+                                    [showOperator]="false" [showAddButton]="false" [showApplyButton]="false"
+                                    (onShow)="filterOpen = true" (onHide)="filterOpen = false"
+                                    [showClearButton]="false">
+                                    <ng-template pTemplate="filtericon">
+                                        <i [ngClass]=" filterMedicines.coveragePos != true && filterMedicines.coveragePos != false && filterMedicines.coveragePos ? 'pi  pi-filter-fill' : 'pi pi-filter'"
+                                            [ngStyle]="{'color': filterMedicines.coveragePos != true && filterMedicines.coveragePos != false && filterMedicines.coveragePos ? 'slateblue' : ''}"></i>
+                                    </ng-template>
+                                    <ng-template pTemplate="header">
+                                        <div class="px-3 pt-3 pb-0">
+                                            <span class="font-bold">Tipos de cobertura</span>
+                                        </div>
+                                    </ng-template>
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-multiSelect [options]="typeCoverage" placeholder="Buscar tipo de proceso"
+                                            [(ngModel)]="filterMedicines.coveragePos" [optionValue]="'value'"
+                                            (onChange)="onSelectionChange()" [optionLabel]="'name'" [showClear]="true"
+                                            [filter]="true" [maxSelectedLabels]="1" [selectionLimit]="1"
+                                            (onClear)="listMedicines()" [emptyMessage]="'No hay datos'"
+                                            [emptyFilterMessage]="'No se encontraron resultados'"
+                                            [style]="{'min-width':'250px'}">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{ option.name }}</span>
+                                                </div>
+                                            </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                    <ng-template pTemplate="footer">
+                                        <p-button label="Limpiar" variant="outlined" size="small"
+                                            (click)="filterMedicines.coveragePos = null; hidenOverlay(columnFilterClear)" />
+                                    </ng-template>
+                                </p-columnFilter>
+                            </div>
+                        </th>
+                        <th>
+                            <div class="flex items-center">
+                                Acciones
+                            </div>
+                        </th>
+                    </tr>
+                </ng-template>
+
+                <ng-template #body let-medicine let-rowIndex="rowIndex" let-ri="rowIndex">
+                    <tr>
+                        <td>{{ paginable.elementFirst + rowIndex + 1 }}</td>
+                        <td>{{ medicine.code }}</td>
+                        <td>{{ medicine.nameMedicine }}</td>
+                        <td>
+                            <div class="text-center">
+                                <i class="pi pi-check-circle text-green-500" *ngIf="medicine.coveragePos"></i>
+                                <i class="pi pi-times-circle text-red-500" *ngIf="!medicine.coveragePos"></i>
+                            </div>
+                        </td>
+                        <td><p-button label="Solicitar" severity="info" (onClick)="createRequest(medicine)"/></td>
+                    </tr>
+                </ng-template>
+                <ng-template #emptymessage>
+                    <tr>
+                        <td colspan="5">No hay medicamentos</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+            <p-paginator (onPageChange)="onPageChange($event)" [first]="paginable.elementFirst" [rows]="15"
+                [totalRecords]="paginable.totalElements" [showCurrentPageReport]="true" [showPageLinks]="true"
+                [showJumpToPageDropdown]="false"
+                currentPageReportTemplate="Mostrado {{paginable.elementFirst+1}} al {last} de {{paginable.totalElements}}"
+                [rowsPerPageOptions]="[10, 15, 20, 30, 40, 50]" />
+        </div>
+    </div>
+        <app-create-request [medicine]="medicineReq" [displayModal]="openModal" (closeModalEvent)="medicineReq= null; openModal=false; listMedicines()"></app-create-request>
+</div>

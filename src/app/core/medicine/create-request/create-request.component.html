@@ -1,0 +1,84 @@
+<p-dialog header="Crear Solicitud de medicamentos" [modal]="true" [(visible)]="displayModal" [draggable]="false"
+    (onHide)="handleDialogClose()" [resizable]="false" appendTo="body" [maximizable]="true" [style]="{ width: '80%' }">
+
+    <div class="columns-3 mb-2">
+        <label for="Codigo" class="block mb-2  font-bold">
+            Codigo del Medicamento:
+        </label>
+        <label for="code">{{medicine?.code}}</label>
+        <label for="Medicamento" class="block mb-2 font-bold">
+            Nombre del Medicamento:
+        </label>
+        <label for="nameMedicine">{{medicine?.nameMedicine}}</label>
+        <label for="Cobertura" class="block mb-2 font-bold">
+            Cobertura POS:
+        </label>
+        <label for="cobertura1">
+            <div>
+                <i class="pi pi-check-circle text-green-500" *ngIf="medicine?.coveragePos"></i>
+                <i class="pi pi-times-circle text-red-500" *ngIf="!medicine?.coveragePos"></i>
+            </div>
+        </label>
+    </div>
+    <form [formGroup]="fromCreated" (ngSubmit)="saveRequest()">
+        <div class="mb-2">
+            <label for="amount" class="block mb-2 font-bold">Cantidad:</label>
+            <input type="text" pInputText style="width: 100%;" formControlName="amount"
+                placeholder="Proporcione la cantidad" />
+        </div>
+        <div *ngIf="fromCreated.get('dataAdditionsRequestRequest')" formGroupName="dataAdditionsRequestRequest"
+            class="grid grid-cols-2 gap-x-6 gap-y-4">
+
+            <!-- Número de orden -->
+            <div>
+                <label class="block font-bold mb-1">Número de orden:</label>
+                <input type="number" pInputText class="w-full" formControlName="numberOrder"
+                    placeholder="Número de orden" />
+                <small class="p-error text-red-500 block mt-1" *ngIf="fromCreated.get('dataAdditionsRequestRequest.numberOrder')?.hasError('required') &&
+                  fromCreated.get('dataAdditionsRequestRequest.numberOrder')?.touched">
+                    El número de orden es obligatorio.
+                </small>
+            </div>
+
+            <!-- Dirección -->
+            <div>
+                <label class="block font-bold mb-1">Dirección:</label>
+                <input type="text" pInputText class="w-full" formControlName="address" placeholder="Dirección" />
+                <small class="p-error text-red-500 block mt-1" *ngIf="fromCreated.get('dataAdditionsRequestRequest.address')?.hasError('required') &&
+                  fromCreated.get('dataAdditionsRequestRequest.address')?.touched">
+                    La dirección es obligatoria.
+                </small>
+            </div>
+
+            <!-- Teléfono -->
+            <div>
+                <label class="block font-bold mb-1">Teléfono:</label>
+                <input type="text" pInputText class="w-full" formControlName="phone" placeholder="Teléfono" />
+                <small class="p-error text-red-500 block mt-1" *ngIf="fromCreated.get('dataAdditionsRequestRequest.phone')?.hasError('required') &&
+                  fromCreated.get('dataAdditionsRequestRequest.phone')?.touched">
+                    El teléfono es obligatorio.
+                </small>
+            </div>
+
+            <!-- Correo -->
+            <div>
+                <label class="block font-bold mb-1">Correo:</label>
+                <input type="text" pInputText class="w-full" formControlName="email" placeholder="Correo" />
+                <small class="p-error text-red-500 block mt-1" *ngIf="fromCreated.get('dataAdditionsRequestRequest.email')?.hasError('required') &&
+                  fromCreated.get('dataAdditionsRequestRequest.email')?.touched">
+                    El correo es obligatorio.
+                </small>
+                <small class="p-error text-red-500 block mt-1" *ngIf="fromCreated.get('dataAdditionsRequestRequest.email')?.hasError('email') &&
+                  fromCreated.get('dataAdditionsRequestRequest.email')?.touched">
+                    El formato del correo no es válido.
+                </small>
+            </div>
+
+        </div>
+
+        <div class="text-center mt-2">
+            <p-button label="Crear solicitud" [raised]="true" severity="success" type="submit" />
+        </div>
+    </form>
+
+</p-dialog>
